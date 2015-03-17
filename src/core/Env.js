@@ -20,6 +20,7 @@ getJasmineRequireObj().Env = function(j$) {
     var currentlyExecutingSuites = [];
     var currentDeclarationSuite = null;
     var throwOnExpectationFailure = false;
+    var randomize = options.randomize || false;
 
     var currentSuite = function() {
       return currentlyExecutingSuites[currentlyExecutingSuites.length - 1];
@@ -215,7 +216,8 @@ getJasmineRequireObj().Env = function(j$) {
           }
           currentlyExecutingSuites.pop();
           reporter.suiteDone(result);
-        }
+        },
+        randomize: randomize
       });
 
       if(!processor.processTree().valid) {
