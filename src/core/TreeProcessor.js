@@ -8,7 +8,8 @@ getJasmineRequireObj().TreeProcessor = function() {
         stats = { valid: true },
         processed = false,
         defaultMin = Infinity,
-        defaultMax = 1 - Infinity;
+        defaultMax = 1 - Infinity,
+        randomize = attrs.randomize || false;
 
     this.processTree = function() {
       processNode(tree, false);
@@ -66,9 +67,13 @@ getJasmineRequireObj().TreeProcessor = function() {
         };
       } else {
         var hasExecutableChild = false;
+        var children = node.children;
+        if (randomize) {
+          children = j$.util.shuffle(node.children);
+        }
 
-        for (var i = 0; i < node.children.length; i++) {
-          var child = node.children[i];
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
 
           processNode(child, parentEnabled);
 

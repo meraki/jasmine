@@ -630,4 +630,36 @@ describe("TreeProcessor", function() {
     childFns[1].fn();
     expect(leaf3.execute).toHaveBeenCalled();
   });
+
+  it("supports randomly running sibling nodes", function() {
+    var leaf1 = new Leaf(),
+        leaf2 = new Leaf(),
+        leaf3 = new Leaf(),
+        parent = new Node({ children: [leaf2, leaf3] }),
+        root = new Node({ children: [leaf1, parent] }),
+        queueRunner = jasmine.createSpy('queueRunner'),
+        processor = new j$.TreeProcessor({
+          tree: root,
+          runnableIds: [root.id],
+          queueRunnerFactory: queueRunner,
+          randomize: true
+        });
+
+    processor.execute();
+    var queueableFns = queueRunner.calls.mostRecent().args[0].queueableFns;
+    expect(queueableFns.length).toBe(2);
+
+    // order may be swapped
+    queueableFns[0].fn();
+    queueableFns[1].fn();
+
+    expect(leaf1.execute).toHaveBeenCalled();
+    var childFns = queueRunner.calls.mostRecent().args[0].queueableFns;
+    expect(childFns.length).toBe(2);
+
+    childFns[0].fn();
+    childFns[1].fn();
+    expect(leaf2.execute).toHaveBeenCalled();
+    expect(leaf3.execute).toHaveBeenCalled();
+  });
 });
